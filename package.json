@@ -1,0 +1,15 @@
+{
+  "name": "assign_admins_to_airports",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "request-json": "^0.6.2"
+  }
+}
