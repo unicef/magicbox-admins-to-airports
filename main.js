@@ -15,7 +15,7 @@ let columns = [
 ]
 let rows = [columns];
 
-bluebird.reduce(airports.features.slice(0,10), (h, f) => {
+bluebird.reduce(airports.features, (h, f) => {
   return fetch_admin(f.geometry.coordinates)
   .then(line => {
     h[f.properties.iata_code] = line;
@@ -41,7 +41,7 @@ bluebird.reduce(airports.features.slice(0,10), (h, f) => {
 
 function fetch_admin(coordinates) {
   return new Promise((resolve, reject) => { // 33.385586,66.445313 // + coordinates.join(',')
-    client.get('/api/coordinates/' + coordinates.join(','), (err, res, body) => {
+    client.get('/api/coordinates/' + coordinates.reverse().join(','), (err, res, body) => {
       resolve(
         all_admin_level_ids(body[0].admin_id)
       )
@@ -50,15 +50,24 @@ function fetch_admin(coordinates) {
 }
 
 function all_admin_level_ids(admin_id) {
-  let line = ''
+  let ary = Array(5).fill(null)
+
   if (admin_id) {
     var iso = admin_id.slice(0,3);
     var ids = admin_id.match(/\d+_/g)
     .map(e => { return parseInt(e)});
 
-    line = ids.map((e, i) => {
+    let original_ids = ids.map((e, i) => {
       return iso + '_' + ids.slice(0, i+1).join('_') + '_gadm2-8';
-    }).join(',')
+    })
+
+    // ary.forEach((z, i) => {
+    //   ary[i] = original_ids[i] ? original_ids[i] : null
+    // })
+
+    ary.forEach((z, i) => {
+      ary[i] = original_ids[i] ? original_ids[i] : (i == 1 ? ary[i-1] : null)
+    })
   }
-  return line
+  return ary.join(',');
 }
