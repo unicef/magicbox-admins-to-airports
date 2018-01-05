@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "jsonfile": "^4.0.0",
     "request-json": "^0.6.2"
   }
 }
