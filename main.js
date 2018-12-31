@@ -14,8 +14,8 @@ let columns = [
   'id_5'
 ]
 let rows = [columns];
-
 bluebird.reduce(airports.features, (h, f) => {
+  console.log(f.properties.iata_code)
   return fetch_admin(f.geometry.coordinates)
   .then(line => {
     h[f.properties.iata_code] = line;
@@ -43,31 +43,35 @@ function fetch_admin(coordinates) {
   return new Promise((resolve, reject) => { // 33.385586,66.445313 // + coordinates.join(',')
     client.get('/api/coordinates/' + coordinates.reverse().join(','), (err, res, body) => {
       resolve(
-        all_admin_level_ids(body[0].admin_id)
+        all_admin_level_ids(body[0])
       )
     });
   })
 }
 
-function all_admin_level_ids(admin_id) {
+function all_admin_level_ids(obj) {
   let ary = Array(5).fill(null)
-
-  if (admin_id) {
-    var iso = admin_id.slice(0,3);
-    var ids = admin_id.match(/\d+_/g)
-    .map(e => { return parseInt(e)});
-
-    let original_ids = ids.map((e, i) => {
-      return iso + '_' + ids.slice(0, i+1).join('_') + '_gadm2-8';
-    })
-
-    // ary.forEach((z, i) => {
-    //   ary[i] = original_ids[i] ? original_ids[i] : null
-    // })
-
-    ary.forEach((z, i) => {
-      ary[i] = original_ids[i] ? original_ids[i] : (i == 1 ? ary[i-1] : null)
-    })
+  for(i = 0; i <=5; i++) {
+    if (obj['gid_' + i]) {
+      ary[i] = obj['gid_' + i]  
+    }
   }
+  // if (admin_id) {
+  //   admin_id = admin_id.replace('_gadm36', '')
+  //   const admin_levels = admin_id.match(/\./g).length
+  //   const segments = admin_id.split(/\./)
+  //   ary[0] = segments
+  //
+  //   if (segments.length > 1) {
+  //     const suffix = admin_id.match(/_\d$/)
+  //     for (i = 1; i <= admin_levels; i++) {
+  //       console.log(
+  //         segments.slice(0, i).join('.'), suffix
+  //       )
+  //     }
+  //   }
+  //}
+
+  console.log(ary)
   return ary.join(',');
 }
