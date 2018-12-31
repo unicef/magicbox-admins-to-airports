@@ -41,7 +41,7 @@ bluebird.reduce(airports.features, (h, f) => {
 
 function fetch_admin(coordinates) {
   return new Promise((resolve, reject) => { // 33.385586,66.445313 // + coordinates.join(',')
-    client.get('/api/coordinates/' + coordinates.reverse().join(','), (err, res, body) => {
+    client.get('/api/coordinates/' + [coordinates[1], coordinates[0]].join(','), (err, res, body) => {
       resolve(
         all_admin_level_ids(body[0])
       )
@@ -53,7 +53,7 @@ function all_admin_level_ids(obj) {
   let ary = Array(5).fill(null)
   for(i = 0; i <=5; i++) {
     if (obj['gid_' + i]) {
-      ary[i] = obj['gid_' + i]  
+      ary[i] = obj['gid_' + i] + '_gadm36'
     }
   }
   // if (admin_id) {
